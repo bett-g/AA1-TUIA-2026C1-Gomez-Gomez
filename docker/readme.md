@@ -1,4 +1,6 @@
-# Trabajo Práctico - Clasificación - Aprendizaje Automático 1
+# MLOps Deployment - Clasificación de Lluvia (Docker)
+
+Este directorio contiene todo lo necesario para realizar inferencias sobre nuevos datos climáticos utilizando el modelo de **Regresión Logística Optimizado** entrenado en el Trabajo Práctico. Se proveen instrucciones tanto para ejecutarlo de forma aislada mediante **Docker** como de forma local directa con **Python**.
 
 ## Contenido de la Carpeta
 
@@ -13,39 +15,62 @@
 
 ---
 
-## Instrucciones de Uso
+## Opción A: Ejecución con Docker (Recomendado)
 
-Para poder construir y ejecutar el contenedor, sigue los siguientes pasos. Se asume que tienes Docker instalado y ejecutándose en tu máquina.
+Sigue estos pasos para construir y ejecutar el contenedor. Se asume que tienes Docker instalado y ejecutándose en tu máquina.
 
 ### 1. Construir la Imagen de Docker
-
-Abre una terminal, navega hasta esta carpeta (`docker`) y ejecuta el siguiente comando para construir la imagen llamada `weather-inference`:
-
+Abre una terminal, navega hasta la carpeta `docker` y ejecuta:
 ```bash
 docker build -t weather-inference:latest .
 ```
 
-### 2. Ejecutar la Inferencia con el Contenedor
-
-Para poder pasar un archivo CSV local al contenedor y recibir las predicciones, debes montar un volumen utilizando la bandera `-v`. 
+### 2. Ejecutar la Inferencia
+Para pasar archivos CSV locales al contenedor y recibir las predicciones, debes montar un volumen utilizando la bandera `-v`.
 
 El contenedor acepta dos argumentos obligatorios de línea de comandos:
 1.  La ruta del archivo CSV de entrada (dentro del contenedor).
 2.  La ruta del archivo CSV de salida (dentro del contenedor).
 
-#### Comando de Ejecución (Windows Powershell):
+*   **En Windows (PowerShell):**
+    ```powershell
+    docker run --rm -v "C:\Ruta\A\Tus\Datos:/data" weather-inference:latest /data/datos_nuevos.csv /data/predicciones.csv
+    ```
+*   **En Windows (Command Prompt - CMD):**
+    ```cmd
+    docker run --rm -v "C:\Ruta\A\Tus\Datos:/data" weather-inference:latest /data/datos_nuevos.csv /data/predicciones.csv
+    ```
+*   **En macOS / Linux / Git Bash:**
+    ```bash
+    docker run --rm -v "/absolute/path/to/data:/data" weather-inference:latest /data/datos_nuevos.csv /data/predicciones.csv
+    ```
 
-```powershell
-docker run --rm -v "C:\Ruta\A\Tus\Datos:/data" weather-inference:latest /data/datos_nuevos.csv /data/predicciones.csv
-```
+> *Nota:* Reemplaza `C:\Ruta\A\Tus\Datos` o `/absolute/path/to/data` por la carpeta real en tu computadora donde se encuentra el archivo `datos_nuevos.csv`. El archivo de salida `predicciones.csv` se creará en esa misma carpeta.
 
-#### Comando de Ejecución (macOS / Linux / Git Bash):
+---
 
+## Opción B: Ejecución Alternativa SIN Docker (Python Local)
+
+Si no tienes Docker instalado, puedes ejecutar el script de inferencia directamente utilizando el entorno de Python de tu sistema local.
+
+### 1. Instalar las dependencias
+Desde la terminal, instala las librerías necesarias ejecutando:
 ```bash
-docker run --rm -v "/absolute/path/to/data:/data" weather-inference:latest /data/datos_nuevos.csv /data/predicciones.csv
+pip install pandas numpy scikit-learn==1.8.0 joblib
 ```
+*(Nota: Se recomienda utilizar la versión `1.8.0` de `scikit-learn` para asegurar la correcta des-serialización de los archivos `.joblib` entrenados).*
 
-> **Nota:** Reemplaza `C:\Ruta\A\Tus\Datos` o `/absolute/path/to/data` por la carpeta real en tu computadora donde se encuentra el archivo `datos_nuevos.csv`. El archivo de salida `predicciones.csv` se creará en esa misma carpeta.
+### 2. Ejecutar la Inferencia
+Abre una terminal en la carpeta raíz del proyecto y corre el script pasándole el archivo de entrada y de salida como argumentos:
+
+*   **Si ejecutas desde la carpeta raíz del repositorio:**
+    ```bash
+    python docker/inferencia.py weatherAUS_2026C1.csv resultado_local.csv
+    ```
+*   **Si ejecutas desde adentro de la carpeta `docker/`:**
+    ```bash
+    python inferencia.py ../weatherAUS_2026C1.csv ../resultado_local.csv
+    ```
 
 ---
 
