@@ -15,7 +15,7 @@ Este directorio contiene todo lo necesario para realizar inferencias sobre nuevo
 
 ---
 
-## Opción A: Ejecución con Docker (Recomendado)
+## Opción A: Ejecución con Docker
 
 Sigue estos pasos para construir y ejecutar el contenedor. Se asume que tienes Docker instalado y ejecutándose en tu máquina.
 
